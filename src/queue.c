@@ -1,5 +1,9 @@
 #include "queue.h"
 
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
 void queue_init(Queue *q) {
     q->front = NULL;
     q->back = NULL;

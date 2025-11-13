@@ -8,7 +8,7 @@
 typedef struct {
     void *data;
     size_t size;
-    Node *next;
+    struct Node *next;
 } Node;
 
 typedef struct {
@@ -21,8 +21,8 @@ typedef struct {
 } Queue;
 
 void queue_init(Queue *q);
-static Node* create_node(const void *data, size_t size);
-static void free_node(Node *node);
+Node* create_node(const void *data, size_t size);
+void free_node(Node *node);
 void enqueue(Queue *q, const void *data, size_t size);
 Node* dequeue(Queue *q);
 Node* peek(Queue *q);
