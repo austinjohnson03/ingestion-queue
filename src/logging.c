@@ -7,7 +7,7 @@
 
 #define MAX_PATH 256
 
-Logger global_logger = {0};
+Logger LOGGER;
 
 static const char *level_strings[] = {
     "DEBUG",
@@ -28,16 +28,20 @@ static void ensure_log_dir_exists(const char *filepath) {
     mkdir(path, 0775);
 }
 
-bool logger_init(Logger *logger, const char *filepath, LogLevel level, bool use_stdout) {
-    if (!logger || !filepath) return false;
+bool logger_init(const char *filepath, LogLevel level, bool use_stdout) {
 
     ensure_log_dir_exists(filepath);
 
-    logger->file = fopen(filepath, "a");
-    if (!logger->file) return false;
+    LOGGER.file = fopen(filepath, "a");
+    if (!LOGGER.file) {
+        fprintf(stderr, "Logger failed to open file: %s\n", filepath);
+        return false;
+    }
 
-    logger->level = level;
-    logger->use_stdout = use_stdout;
+    LOGGER.level = level;
+    LOGGER.use_stdout = use_stdout;
+
+    pthread_mutex_init(&LOGGER.lock, NULL);
 
     return true;
 }
@@ -71,9 +75,11 @@ void logger_log(Logger *logger, LogLevel level, const char *fmt, ...) {
     }
 }
 
-void logger_close(Logger *logger) {
-    if (!logger || !logger->file) {
-        fclose(logger->file);
-        logger->file = NULL;
+void logger_close(void) {
+    if (LOGGER.file) {
+        fclose(LOGGER.file);
+        LOGGER.file = NULL;
     }
+
+    pthread_mutex_destory(&LOGGER.lock);
 }
