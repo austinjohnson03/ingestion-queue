@@ -1,4 +1,5 @@
 #include "queue.h"
+#include "node.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -10,38 +11,6 @@ void queue_init(Queue *q) {
     q->count = 0;
     pthread_mutex_init(&q->lock, NULL);
     pthread_cond_init(&q->not_empty, NULL);
-}
-
-static Node* create_node(const void *data, size_t size) {
-    Node *node = malloc(sizeof(Node));
-    if (!node) {
-        fprintf(stderr, "Unable to allocate memory for new Node.\n");
-        return NULL;
-    }
-
-    node->data = malloc(size);
-    if (!node->data) {
-        free(node);
-        fprintf(stderr, "Unable to allocate memory for Node data.\n");
-        return NULL;
-    }
-
-    memcpy(node->data, data, size);
-    node->size = size;
-    node->next = NULL;
-    return node;
-}
-
-static void free_node(Node *node) {
-    if (!node) return;
-
-    if (node->data) {
-        free(node->data);
-        node->data = NULL;
-    }
-
-    node->next = NULL;
-    free(node);
 }
 
 void enqueue(Queue *q, const void *data, size_t size) {

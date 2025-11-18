@@ -4,12 +4,7 @@
 #include <stdlib.h>
 #include <stdbool.h>
 #include <pthread.h>
-
-typedef struct Node {
-    void *data;
-    size_t size;
-    struct Node *next;
-} Node;
+#include "node.h"
 
 typedef struct Queue {
     struct Node *front;
@@ -21,8 +16,6 @@ typedef struct Queue {
 } Queue;
 
 void queue_init(Queue *q);
-static Node* create_node(const void *data, size_t size);
-static void free_node(Node *node);
 void enqueue(Queue *q, const void *data, size_t size);
 Node* dequeue(Queue *q);
 Node* peek(Queue *q);
