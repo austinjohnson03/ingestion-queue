@@ -1,4 +1,4 @@
-#include "logger.h"
+#include "logging.h"
 #include <stdarg.h>
 #include <time.h>
 #include <string.h>
@@ -22,13 +22,13 @@ static void ensure_log_dir_exists(const char *filepath) {
     path[sizeof(path) - 1] = 0;
 
     char *slash = strrchr(path, '/');
-    if (!slash) return false;
+    if (!slash) return;
 
     *slash = 0;
     mkdir(path, 0775);
 }
 
-bool logger_init(const char *filepath, LogLevel level, bool use_stdout) {
+bool logger_init(const char *filepath, const LogLevel level, const bool use_stdout) {
 
     ensure_log_dir_exists(filepath);
 
@@ -46,40 +46,3 @@ bool logger_init(const char *filepath, LogLevel level, bool use_stdout) {
     return true;
 }
 
-void logger_log(Logger *logger, LogLevel level, const char *fmt, ...) {
-    if (!logger || !logger->file) return false;
-    if (level < logger->level) return;
-
-    time_t now = time(NULL);
-    struct tm *t = localtime(&now);
-
-    char timebuf[32];
-    strftime(timebuf, sizeof(timebuf), "%Y-%m-%d %H:%M:%S", t);
-
-    fprintf(logger->file, "[%s] [%s] ", timebuf, level_strings[level]);
-
-    va_list args;
-    va_start(args, fmt);
-    vprintf(logger->file, fmt, args);
-    va_end(args);
-
-    fprintf(logger->file, "\n");
-    fflush(logger->file);
-
-    if (logger->use_stdout) {
-        printf("[%s] [%s] ", timebuf, level_strings[level]);
-        va_start(args, fmt);
-        vprintf(fmt, args);
-        va_end(args);
-        printf("\n");
-    }
-}
-
-void logger_close(void) {
-    if (LOGGER.file) {
-        fclose(LOGGER.file);
-        LOGGER.file = NULL;
-    }
-
-    pthread_mutex_destory(&LOGGER.lock);
-}

@@ -10,13 +10,11 @@
 #define PORT 5100
 #define BUFFER_SIZE 1024
 
-int main(void) {
-    int status, rv, client_fd;
+int client(void) {
     struct sockaddr_in serv_addr;
-    char *hello = "Hello from client.\n";
-    char buffer[BUFFER_SIZE] = { 0 };
+    char const *hello = "Hello from client.\n";
 
-    client_fd = socket(AF_INET, SOCK_STREAM, 0);
+    int const client_fd = socket(AF_INET, SOCK_STREAM, 0);
 
     if (client_fd < 0) {
         fprintf(stderr, "Error creating client socket.\n");
@@ -27,13 +25,13 @@ int main(void) {
     serv_addr.sin_port = htons(PORT);
 
 
-    int av = inet_pton(AF_INET, "127.0.0.1", &serv_addr.sin_addr);
+    int const av = inet_pton(AF_INET, "127.0.0.1", &serv_addr.sin_addr);
     if (av < 0) {
         fprintf(stderr, "Invalid address value.\n");
         exit(1);
     }
 
-    status = connect(client_fd, (struct sockaddr *)&serv_addr, sizeof(serv_addr));
+    int const status = connect(client_fd, (struct sockaddr *)&serv_addr, sizeof(serv_addr));
     if (status < 0) {
         fprintf(stderr, "Error connecting to server.\n");
         exit(1);

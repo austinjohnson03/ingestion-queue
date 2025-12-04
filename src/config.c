@@ -4,7 +4,7 @@
 #include <string.h>
 
 int load_config(const char *file_path, ServerConfig *config) {
-    FILE *file = fopen(file_path, 'r');
+    FILE *file = fopen(file_path, "r");
 
     if (!file) {
         perror("fopen");
